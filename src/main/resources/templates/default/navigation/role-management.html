@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" th:href="@{/{path}/h-ui/css/H-ui.min.css(path=${staticFormwork})}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/{path}/h-ui.admin/css/H-ui.admin.css(path=${staticFormwork})}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/{path}/h-ui.admin/css/style.css(path=${staticFormwork})}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/{path}/lib/Hui-iconfont/1.0.8/iconfont.css(path=${staticFormwork})}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/{path}/h-ui.admin/skin/default/skin.css(path=${staticFormwork})}" id="skin"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/{path}/h-ui.admin/css/style.css(path=${staticFormwork})}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/{path}/lib/bootstrap-datetimepicker/datetimepicker.css(path=${staticFormwork})}"/>
+    <title>导航系统</title>
+    <style>
+        .head-left-text {display: table-cell;vertical-align: middle;height: 50px;padding-top: 5px;margin-left: 8px;}
+        .margin-bottom {margin-bottom: 0 !important;margin-left: 8px;color: #017BCE; font-family: MicrosoftYaHei;}
+        .pagination > li {display: inline;}
+        .pull-right {float: right !important;}
+        .pagination > li:first-child > a, .pagination > li:first-child > span {margin-left: 0;border-top-left-radius: 4px;border-bottom-left-radius: 4px;}
+        .pagination > .disabled > a {color: #777;cursor: not-allowed;background-color: #fff;border-color: #ddd;}
+        .pagination > li > a, .pagination > li > span {position: relative;float: left;padding: 6px 12px;margin-left: -1px;line-height: 1.42857143;color: #337ab7;text-decoration: none;background-color: #fff;border: 1px solid #ddd;}
+    </style>
+</head>
+<body>
+     <nav class="breadcrumb">
+         <i class="Hui-iconfont">&#xe67f;</i>首页<span class="c-gray en">&gt;</span>导航管理<span class="c-gray en">&gt;</span> 角色管理
+     </nav>
+     <div class="page-container">
+         <div class="text-l" style="margin-bottom:15px;">
+             <form>
+                                           角色：<input type="text" class="input-text" style="width:250px" placeholder="请输入角色名称" name="name" id="name">
+                 <button type="button" id="searchBtn" class="btn btn-primary radius" onclick="personCount(1)">
+                     <i class="Hui-iconfont">&#xe665;</i>查询
+                 </button>
+                 <button type="button" class="btn btn-primary radius" onclick="modaldemo_save()"><i class="Hui-iconfont">&#xe600;</i> 新增角色</button>
+             </form>
+         </div>
+         <table class="table table-border table-bg table-bordered">
+             <thead>
+                 <tr>
+                     <th class="text-c" width="100">序号</th>
+                     <th class="text-c">角色名称</th>
+                     <th class="text-c">操作人</th>
+                     <th class="text-c">操作时间</th>
+                     <th class="text-c" width="100">操作</th>
+                 </tr>
+             </thead>
+             <tbody id="dataDiv">
+             </tbody>
+         </table>
+         <div style="margin-top: 20px;color:blue;" id="myul" class="pagination pull-right"></div>
+     </div>
+     <!-- 新增弹框 -->
+     <div id="modal-demo-1" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+         <div class="modal-dialog">
+             <div class="modal-content radius">
+                 <div class="modal-header">
+                     <h3 class="modal-title">新增角色</h3>
+                     <a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+                 </div>
+                 <div class="modal-body">
+                     <form action="" method="" class="form form-horizontal" id="demoform-1">
+                         <div class="row cl">
+                             <label class="form-label col-xs-4 col-sm-3">角色名称：</label>
+                             <div class="formControls col-xs-8 col-sm-9">
+                                 <input type="text" class="input-text" autocomplete="off" placeholder="角色名称" id="name-save">
+                             </div>
+                         </div>
+                         <div class="row cl">
+                             <label class="form-label col-xs-4 col-sm-3">权限分配：</label>
+                             <div class="formControls col-xs-8 col-sm-9" id="addJurisdiction">
+                             </div>
+                         </div>
+                     </form>
+                 </div>
+                 <div class="modal-footer">
+                     <button class="btn btn-primary" onclick="addRole()">确定</button>
+                     <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                 </div>
+             </div>
+         </div>
+     </div>
+     <!-- 修改弹框 -->
+     <div id="modal-demo-2" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+         <div class="modal-dialog">
+             <div class="modal-content radius">
+                 <div class="modal-header">
+                     <h3 class="modal-title">修改角色信息</h3>
+                     <a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+                 </div>
+                 <div class="modal-body">
+                     <form action="" method="post" class="form form-horizontal" id="demoform-2">
+                         <div class="row cl">
+                             <label class="form-label col-xs-4 col-sm-3">角色名称：</label>
+                             <div class="formControls col-xs-8 col-sm-9">
+                                 <input type="hidden" class="input-text"  id="lidEdit" >
+                                 <input type="text" class="input-text" autocomplete="off" placeholder="角色名称" id="nameEdit">
+                             </div>
+                         </div>
+                         <div class="row cl">
+                             <label class="form-label col-xs-4 col-sm-3">权限分配：</label>
+                             <div class="formControls col-xs-8 col-sm-9" id="updateJurisdiction">
+                             </div>
+                         </div>
+                     </form>
+                 </div>
+                 <div class="modal-footer">
+                     <button class="btn btn-primary" onclick="updateRole()">确定</button>
+                     <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                 </div>
+             </div>
+         </div>
+     </div>
+     <!--_footer 作为公共模版分离出去-->
+     <script type="text/javascript" th:src="@{/{path}/lib/jquery/1.9.1/jquery.min.js(path=${staticFormwork})}"></script>
+     <script type="text/javascript" th:src="@{/{path}/lib/layer/2.4/layer.js(path=${staticFormwork})}"></script>
+     <script type="text/javascript" th:src="@{/{path}/h-ui/js/H-ui.js(path=${staticFormwork})}"></script>
+     <script type="text/javascript" th:src="@{/{path}/h-ui.admin/js/H-ui.admin.page.js(path=${staticFormwork})}"></script>
+     <script type="text/javascript" th:src="@{/{path}/js/tool/vue.js(path=${staticFormwork})}"></script>
+     <script type="text/javascript" th:src="@{/{path}/lib/jquery.contextmenu/jquery.contextmenu.r2.js(path=${staticFormwork})}"></script>
+     <script type="text/javascript" th:src="@{/{path}/lib/layer/2.1/layer.js(path=${staticFormwork})}"></script>
+     <script type="text/javascript" th:src="@{/{path}/lib/laypage/1.2/laypage.js(path=${staticFormwork})}"></script>
+     <script type="text/javascript" th:src="@{/{path}/lib/layer/2.1/extend/layer.ext.js(path=${staticFormwork})}"></script>
+     <!--/_footer /作为公共模版分离出去-->
+     <script type="text/javascript">
+            //新增全选效果
+            $("#addJurisdiction").on('click','.permission-list dt input:checkbox',function(){
+                if($(this).prop("checked")){
+                    $(this).parents("dt").next("dd").find("input:checkbox").prop("checked",true)
+                }else{
+                    $(this).parents("dt").next("dd").find("input:checkbox").prop("checked",false)
+                }
+            })
+            //新增内层单选效果
+            $("#addJurisdiction").on('click','.permission-list2 dt input:checkbox',function(){
+                $(this).parents(".cxBox").prev().find("input:checkbox").prop("checked",true);
+                var l2 = $(this).parents(".cxBox").find(".permission-list2 dt input:checked").length;
+                if(l2 == 0){
+                    $(this).parents(".cxBox").prev().find("input:checkbox").prop("checked",false);
+                }else{
+                    $(this).parents(".cxBox").prev().find("input:checkbox").prop("checked",true);
+                }
+            })
+
+            //更改全选效果
+            $("#updateJurisdiction").on('click','.permission-list dt input:checkbox',function(){
+                if($(this).prop("checked")){
+                    $(this).parents("dt").next("dd").find("input:checkbox").prop("checked",true)
+                }else{
+                    $(this).parents("dt").next("dd").find("input:checkbox").prop("checked",false)
+                }
+            })
+            //更改内层单选效果
+            $("#updateJurisdiction").on('click','.permission-list2 dt input:checkbox',function(){
+                $(this).parents(".cxBox").prev().find("input:checkbox").prop("checked",true);
+                var l2 = $(this).parents(".cxBox").find(".permission-list2 dt input:checked").length;
+                if(l2 == 0){
+                    $(this).parents(".cxBox").prev().find("input:checkbox").prop("checked",false);
+                }else{
+                    $(this).parents(".cxBox").prev().find("input:checkbox").prop("checked",true);
+                }
+            })
+            $(function () {
+                personCount(1)
+            })
+            //新增弹框
+            function modaldemo_save() {
+                obj = document.getElementsByName("func");
+                var funcList = [];
+                for(k in obj){
+                    if(obj[k].checked)
+                        funcList.push(obj[k].value);
+                }
+                $.ajax({
+                    async: 'true',
+                    type: 'get',
+                    url: 'roles/trees',
+                    dataType: 'json',
+                    contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                    success: function (data) {
+                        if (data.status == 0){
+                            var jurisdiction = data.objMap.objects;
+                            var str = '';
+                            for(var i=0;i<jurisdiction.length;i++){
+                                str += '<dl class="permission-list">'+
+                                    '<dt><label><input type="checkbox" value="'+jurisdiction[i].lid+'" name="func" id="user-Character-0">'+jurisdiction[i].name+'</label></dt>'
+                                if(jurisdiction[i].childrenList.length == 0){
+                                    str += '<dd class="cxBox"></dd></dl>'
+                                }else{
+                                    str += '<dd class="cxBox">'
+                                    for(var j=0;j<jurisdiction[i].childrenList.length;j++){
+                                        str += '<dl class="cl permission-list2"><dt>'+
+                                            '<label class=""><input type="checkbox" value="'+jurisdiction[i].childrenList[j].lid+'" name="func" id="user-Character-0-0">'+jurisdiction[i].childrenList[j].name+'</label>'+
+                                            '</dt></dl>'
+                                    }
+                                    str +='</dd></dl>'
+                                }
+                            }
+                            $('#addJurisdiction').html(str)
+                            $("#modal-demo-1").modal("show")
+                        } else{
+                            alert(data.message)
+                            return;
+                        }
+                    },
+                    error: function (data) {
+                        alert("接口调用失败")
+                        return;
+                    }
+                })
+            }
+            //修改弹框
+            function modaldemo_edit(lid) {
+                var lid = lid;
+                $.ajax({
+                    async: 'true',
+                    type: 'get',
+                    url: 'roles/'+lid,
+                    dataType: 'json',
+                    contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                    success: function (data) {
+                        if (data.status == 0) {
+                            var jurisdiction = data.objMap.objects.object;
+                            var str = '';
+                            for(var i=0;i<jurisdiction.length;i++){
+                                if (jurisdiction[i].isChoose == 1) {
+                                    str += '<dl class="permission-list">'+
+                                        '<dt><label><input type="checkbox" checked="checked" value="'+jurisdiction[i].lid+'" name="func" id="user-Character-0">'+jurisdiction[i].name+'</label></dt>'
+                                }else{
+                                    str += '<dl class="permission-list">'+
+                                        '<dt><label><input type="checkbox" value="'+jurisdiction[i].lid+'" name="func" id="user-Character-0">'+jurisdiction[i].name+'</label></dt>'
+                                }
+                                if(jurisdiction[i].childrenList.length == 0){
+                                    str += '<dd class="cxBox"></dd></dl>'
+                                }else{
+                                    str += '<dd class="cxBox">'
+                                    for(var j=0;j<jurisdiction[i].childrenList.length;j++){
+                                        if (jurisdiction[i].childrenList[j].isChoose == 1) {
+                                            str += '<dl class="cl permission-list2"><dt>'+
+                                                '<label class=""><input type="checkbox" value="'+jurisdiction[i].childrenList[j].lid+'" checked="checked" name="func" id="user-Character-0-0">'+jurisdiction[i].childrenList[j].name+'</label>'+
+                                                '</dt></dl>'
+                                        }else{
+                                            str += '<dl class="cl permission-list2"><dt>'+
+                                                '<label class=""><input type="checkbox" value="'+jurisdiction[i].childrenList[j].lid+'" name="func" id="user-Character-0-0">'+jurisdiction[i].childrenList[j].name+'</label>'+
+                                                '</dt></dl>'
+                                        }
+                                    }
+                                    str +='</dd></dl>'
+                                }
+                            }
+                            $('#updateJurisdiction').html(str)
+                            $('#nameEdit').val(data.objMap.objects.name)
+                            $('#lidEdit').val(data.objMap.objects.lid)
+                            $("#modal-demo-2").modal("show")
+                        }else{
+                            alert(data.message)
+                            return;
+                        }
+                    },
+                    error: function (data) {
+                        alert("接口调用失败")
+                        return;
+                    }
+                })
+
+            }
+            //查询
+            function personCount(pageNo) {
+                var obj = {
+                    name: $('#name').val(),
+                    pageNo: pageNo,
+                    pageSize: 9
+                }
+                $.ajax({
+                    async: true,
+                    type: 'get',
+                    url: 'roles/pages',
+                    data: obj,
+                    dataType: 'json',
+                    contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                    success: function (data) {
+                        if (data.status == 0) {
+                            var persons = data.objMap.objects;
+                        } else {
+                            alert(data.msg);
+                            return;
+                        }
+                        var html = ''
+                        for (key in persons) {
+                            var no = parseInt(key) + 1;
+                            if (persons[key].lid != "gxsoft-admin") {
+                                html += '<tr><td class="text-c">' + no + '</td><td class="text-c">' + persons[key].name + '</td><td class="text-c">' + persons[key].creator + '</td><td class="text-c">' + persons[key].create + '</td>'+
+                                    '<td class="text-c"><a title="修改" href="javascript:;" onclick="modaldemo_edit(\''+persons[key].lid+'\')"  style="text-decoration:none;color:#666;font-size:16px;margin-right:10px;"><i class="Hui-iconfont">&#xe60c;</i></a>&nbsp;&nbsp;<a href="javascript:;" onclick="isDelete(\'' + persons[key].lid + '\')" style="text-decoration:none;font-size:18px;color:#666"><i class="Hui-iconfont">&#xe609;</i></a></td></tr>'
+                            }else{
+                                html += '<tr><td class="text-c">' + no + '</td><td class="text-c">' + persons[key].name + '</td><td class="text-c">' + persons[key].creator + '</td><td class="text-c">' + persons[key].create + '</td>'+
+                                    '<td class="text-c"><a title="修改" href="javascript:;" onclick=""  style="text-decoration:none;color:#666;font-size:16px;margin-right:10px;"></a>&nbsp;&nbsp;<a href="javascript:;" onclick="" style="text-decoration:none;font-size:18px;color:#666"></a></td></tr>'
+                            }
+                        }
+                        $('#dataDiv').html(html);
+                        $("#myul").empty();
+                        $("#myul").append("<li class=\"disabled\"><a>总条数：" + data.objMap.total + "</a></li><li class=\"disabled\"><a>页数：" + pageNo + "/" + data.objMap.pages + "</a></li>");
+                        if (data.objMap.pageNo == 1) {
+                            $("#myul").append("<li class=\"disabled\"><a>前一页</a></li>");
+                        } else {
+                            $("#myul").append("<li><a style='cursor: pointer;' onclick=\"personCount('" + eval(data.objMap.pageNo - 1) + "');\">前一页</a></li>");
+                        }
+                        if (data.objMap.pageNo == data.objMap.pages) {
+                            $("#myul").append("<li class=\"disabled\"><a>后一页</a></li>");
+                        } else {
+                            $("#myul").append("<li><a style='cursor: pointer;' onclick=\"personCount('" + eval(data.objMap.pageNo + 1) + "');\">后一页</a></li>");
+                        }
+                    },
+                    error: function () {
+                        alert("调用接口失败")
+                    }
+                })
+            }
+            //删除
+            function isDelete(lid) {
+                if (confirm("您确定删除此条信息吗？")) {
+                    $.ajax({
+                        async: true,
+                        type: 'delete',
+                        url: 'roles/'+lid,
+                        dataType: 'json',
+                        contentType: 'application/json;charset=utf-8',
+                        success: function (data) {
+                            if (data.status == 0) {
+                                alert("删除成功");
+                                location.replace(location.href);
+                            } else {
+                                alert(data.message);
+                                return;
+                            }
+                        },
+                        error: function () {
+                            alert("调用接口失败")
+                        }
+                    })
+                } else {
+                    return;
+                }
+            }
+            //新增
+            function addRole(){
+                if ($.trim($('#name-save').val()) == null || $.trim($('#name-save').val()) == "") {
+                    alert("名称不能为空")
+                    return false;
+                }
+
+                obj = document.getElementsByName("func");
+                var funcList = [];
+                for(k in obj){
+                    if(obj[k].checked)
+                        funcList.push(obj[k].value);
+                }
+                var dataRole = {
+                    name:$('#name-save').val(),
+                    resouceLids:funcList
+                }
+                $.ajax({
+                    async:'true',
+                    type:'post',
+                    url:'roles',
+                    data:JSON.stringify(dataRole),
+                    dataType:'json',
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                        if(data.status ==0){
+                            alert('新增成功')
+                            $("#modal-demo-1").modal("hide")
+                            location.reload()
+                        }else{
+                            alert(data.message)
+                            return;
+                        }
+                    },
+                    error:function(data){
+                    	alert(data.message)
+                    }
+                })
+            };
+            //修改
+            function updateRole() {
+                if ($.trim($('#nameEdit').val()) == null || $.trim($('#nameEdit').val()) == "") {
+                    alert("名称不能为空")
+                    return false;
+                }
+
+                obj = document.getElementsByName("func");
+                var funcList = [];
+                for(k in obj){
+                    if(obj[k].checked)
+                        funcList.push(obj[k].value);
+                }
+                var dataObj={
+                    lid :$('#lidEdit').val(),
+                    name: $('#nameEdit') .val() ,
+                    resouceLids:funcList
+                }
+                $.ajax({
+                    async: true,
+                    type: 'put',
+                    url: 'roles',
+                    data: JSON.stringify(dataObj),
+                    dataType: 'json',
+                    contentType: 'application/json;charset=utf-8',
+                    success: function (data) {
+                        if (data.status == 0) {
+                            alert("修改成功");
+                            location.replace(location.href);
+                        } else {
+                            alert(data.message);
+                            return;
+                        }
+                    },
+                    error: function () {
+                        alert("调用接口失败")
+                    }
+                })
+            }
+        </script>
+</body>
+</html>
+

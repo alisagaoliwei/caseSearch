@@ -1,0 +1,23 @@
+
+spring:
+    datasource:
+      url: jdbc:oracle:thin:@47.92.174.126:1521:gxsoft
+      username: navigation_system
+      password: navigation_system
+      name: oracle-druid
+      type: com.alibaba.druid.pool.DruidDataSource
+      driver-class-name: oracle.jdbc.driver.OracleDriver
+      minIdle: 15
+      maxActive: 20
+      initialSize: 10
+      maxWait: 60000
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: select 'x' FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      poolPreparedStatements: true
+      maxOpenPreparedStatements: 20
+
+

@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greatsoft.casecheck.mapper.ResourceInfoMapper">
+
+    <select id="findResources" resultType="com.greatsoft.casecheck.entiry.ResourceInfo">
+        SELECT ID AS id ,
+        LID AS lId,
+        NAME AS name,
+        PID AS pid,
+        URL AS url,
+        ICON AS icon,
+        IS_OTHER_PROGRAM AS isOtherProgram ,
+        SERIAL_NO AS serialNo ,
+        IS_LEAF AS isLeaf,
+        LEVE AS leve,
+        STATUS AS status,
+        IS_DELETE AS isDelete,
+        CREATOR_ID AS creatorId,
+        CREATOR AS creator,
+        MODIFIER_ID AS modifierId,
+        MODIFIER AS modifier,
+        GMT_CREATE AS "create",
+        GMT_MODIFIED AS modified,
+        URL_LID AS urlLid
+        FROM RESOURCE_INFO
+        WHERE STATUS='0' AND IS_DELETE='0'
+        ORDER BY to_number(SERIAL_NO)
+    </select>
+    <select id="findResourcesByRoleLid" resultType="com.greatsoft.casecheck.entiry.ResourceInfo"
+            parameterType="java.lang.String">
+     SELECT r.ID AS id ,
+            r.LID AS lId,
+            r.NAME AS name,
+            r.PID AS pid,
+            r.URL AS url,
+            r.ICON AS icon,
+            r.IS_OTHER_PROGRAM AS isOtherProgram ,
+            r.SERIAL_NO AS serialNo ,
+            r.IS_LEAF AS isLeaf,
+            r.LEVE AS leve,
+            r.STATUS AS status,
+            r.IS_DELETE AS isDelete,
+            r.CREATOR_ID AS creatorId,
+            r.CREATOR AS creator,
+            r.MODIFIER_ID AS modifierId,
+            r.MODIFIER AS modifier,
+            r.GMT_CREATE AS "create",
+            r.GMT_MODIFIED AS modified,
+            r.URL_LID AS urlLid,
+            decode(r.URL,NULL,NULL,ubp.PREFIX || ubp.IP || ':' || ubp.PORT || ubp.PATH || r.URL) AS totalUrl
+     FROM ROLE_RESOURCE_INFO rr
+     LEFT JOIN RESOURCE_INFO r ON r.LID=rr.RESOURCE_INFO_LID
+     LEFT JOIN URL_BASE_PATH ubp ON ubp.LID=r.URL_LID
+     WHERE rr.ROLE_LID=#{roleLid} AND r.IS_DELETE='0'
+     ORDER BY to_number(r.SERIAL_NO)
+    </select>
+    <select id="findResourcesByPidAndName" resultType="com.greatsoft.casecheck.entiry.ResourceInfo">
+        SELECT ID AS id ,
+        LID AS lId,
+        NAME AS name,
+        PID AS pid,
+        URL AS url,
+        ICON AS icon,
+        IS_OTHER_PROGRAM AS isOtherProgram ,
+        SERIAL_NO AS serialNo ,
+        IS_LEAF AS isLeaf,
+        LEVE AS leve,
+        STATUS AS status,
+        IS_DELETE AS isDelete,
+        CREATOR_ID AS creatorId,
+        CREATOR AS creator,
+        MODIFIER_ID AS modifierId,
+        MODIFIER AS modifier,
+        GMT_CREATE AS "create",
+        GMT_MODIFIED AS modified,
+        URL_LID AS urlLid
+        FROM RESOURCE_INFO
+        WHERE
+        <choose>
+            <when test="pid != null and pid != ''">
+                PID=#{pid,jdbcType=VARCHAR}
+            </when>
+            <otherwise>
+                PID IS NULL
+            </otherwise>
+        </choose>
+        AND NAME=#{name} AND STATUS='0' AND IS_DELETE='0'
+    </select>
+    <select id="findResourcesByPidAndNo" resultType="com.greatsoft.casecheck.entiry.ResourceInfo">
+        SELECT ID AS id ,
+        LID AS lId,
+        NAME AS name,
+        PID AS pid,
+        URL AS url,
+        ICON AS icon,
+        IS_OTHER_PROGRAM AS isOtherProgram ,
+        SERIAL_NO AS serialNo ,
+        IS_LEAF AS isLeaf,
+        LEVE AS leve,
+        STATUS AS status,
+        IS_DELETE AS isDelete,
+        CREATOR_ID AS creatorId,
+        CREATOR AS creator,
+        MODIFIER_ID AS modifierId,
+        MODIFIER AS modifier,
+        GMT_CREATE AS "create",
+        GMT_MODIFIED AS modified,
+        URL_LID AS urlLid
+        FROM RESOURCE_INFO
+        WHERE
+        <choose>
+            <when test="pid != null and pid != ''">
+                PID=#{pid,jdbcType=VARCHAR}
+            </when>
+            <otherwise>
+                PID IS NULL
+            </otherwise>
+        </choose>
+        AND SERIAL_NO=#{serialNo} AND IS_DELETE='0'
+    </select>
+    <select id="findResourceById" resultType="com.greatsoft.casecheck.entiry.ResourceInfo"
+            parameterType="java.lang.String">
+        SELECT
+        ID AS id ,
+        LID AS lId,
+        NAME AS name,
+        PID AS pid,
+        URL AS url,
+        ICON AS icon,
+        IS_OTHER_PROGRAM AS isOtherProgram ,
+        SERIAL_NO AS serialNo ,
+        IS_LEAF AS isLeaf,
+        LEVE AS leve,
+        STATUS AS status,
+        IS_DELETE AS isDelete,
+        CREATOR_ID AS creatorId,
+        CREATOR AS creator,
+        MODIFIER_ID AS modifierId,
+        MODIFIER AS modifier,
+        GMT_CREATE AS "create",
+        GMT_MODIFIED AS modified,
+        URL_LID AS urlLid
+        FROM RESOURCE_INFO
+        WHERE ID=#{id}
+    </select>
+    <select id="findResourceByNoAndPid" resultType="com.greatsoft.casecheck.entiry.ResourceInfo">
+        SELECT ID AS id ,
+        LID AS lId,
+        NAME AS name,
+        PID AS pid,
+        URL AS url,
+        ICON AS icon,
+        IS_OTHER_PROGRAM AS isOtherProgram ,
+        SERIAL_NO AS serialNo ,
+        IS_LEAF AS isLeaf,
+        LEVE AS leve,
+        STATUS AS status,
+        IS_DELETE AS isDelete,
+        CREATOR_ID AS creatorId,
+        CREATOR AS creator,
+        MODIFIER_ID AS modifierId,
+        MODIFIER AS modifier,
+        GMT_CREATE AS "create",
+        GMT_MODIFIED AS modified,
+        URL_LID AS urlLid
+        FROM RESOURCE_INFO
+        WHERE SERIAL_NO=#{serialNo} AND IS_DELETE='0'
+        <choose>
+            <when test="pid != null and pid != ''">
+                AND PID=#{pid,jdbcType=VARCHAR}
+            </when>
+            <otherwise>
+                AND PID IS NULL
+            </otherwise>
+        </choose>
+    </select>
+    <select id="findResourcesByRoleLidAndPid" resultType="com.greatsoft.casecheck.entiry.ResourceInfo"
+            parameterType="java.lang.String">
+        SELECT r.ID AS id ,
+        r.LID AS lId,
+        r.NAME AS name,
+        r.PID AS pid,
+        r.URL AS url,
+        r.ICON AS icon,
+        r.IS_OTHER_PROGRAM AS isOtherProgram ,
+        r.SERIAL_NO AS serialNo ,
+        r.IS_LEAF AS isLeaf,
+        r.LEVE AS leve,
+        r.STATUS AS status,
+        r.IS_DELETE AS isDelete,
+        r.CREATOR_ID AS creatorId,
+        r.CREATOR AS creator,
+        r.MODIFIER_ID AS modifierId,
+        r.MODIFIER AS modifier,
+        r.GMT_CREATE AS "create",
+        r.GMT_MODIFIED AS modified,
+        r.URL_LID AS urlLid
+        FROM ROLE_RESOURCE_INFO rr
+        LEFT JOIN RESOURCE_INFO r ON r.LID=rr.RESOURCE_INFO_LID
+        WHERE rr.ROLE_LID=#{roleLid} AND r.STATUS='0' AND r.IS_DELETE='0'
+        <choose>
+            <when test="pid != null and pid != ''">
+                AND r.PID=#{pid,jdbcType=VARCHAR}
+            </when>
+            <otherwise>
+                AND r.PID IS NULL
+            </otherwise>
+        </choose>
+        ORDER BY to_number(r.SERIAL_NO)
+    </select>
+    <select id="findResourcesByPid" resultType="com.greatsoft.casecheck.entiry.ResourceInfo"
+            parameterType="java.lang.String">
+        SELECT ID AS id ,
+        LID AS lId,
+        NAME AS name,
+        PID AS pid,
+        URL AS url,
+        ICON AS icon,
+        IS_OTHER_PROGRAM AS isOtherProgram ,
+        SERIAL_NO AS serialNo ,
+        IS_LEAF AS isLeaf,
+        LEVE AS leve,
+        STATUS AS status,
+        IS_DELETE AS isDelete,
+        CREATOR_ID AS creatorId,
+        CREATOR AS creator,
+        MODIFIER_ID AS modifierId,
+        MODIFIER AS modifier,
+        GMT_CREATE AS "create",
+        GMT_MODIFIED AS modified,
+        URL_LID AS urlLid
+        FROM RESOURCE_INFO
+        WHERE 1 = 1
+        AND PID=#{pid,jdbcType=VARCHAR} AND IS_DELETE='0'
+    </select>
+    <select id="findIdsByPidAndName" resultType="java.lang.String">
+        SELECT
+        ID AS Id
+        FROM RESOURCE_INFO
+        WHERE
+        <choose>
+            <when test="pid != null and pid != ''">
+                PID=#{pid,jdbcType=VARCHAR}
+            </when>
+            <otherwise>
+                PID IS NULL
+            </otherwise>
+        </choose>
+        AND NAME=#{name} AND IS_DELETE='0'
+    </select>
+    <select id="findNoByLeve" resultType="java.lang.String">
+        SELECT
+        SERIAL_NO AS serialNo
+        FROM RESOURCE_INFO
+        WHERE
+        LEVE=#{leve} AND IS_DELETE='0'
+        <if test="pid != null and pid != ''">
+           AND PID=#{pid,jdbcType=VARCHAR}
+        </if>
+        ORDER BY to_number(SERIAL_NO)
+    </select>
+    <select id="countByUrlLid" resultType="java.lang.Integer" parameterType="java.lang.String">
+        SELECT COUNT (*)
+        FROM RESOURCE_INFO
+        WHERE URL_LID=#{urlLid} AND IS_DELETE='0'
+    </select>
+    <insert id="insert" parameterType="com.greatsoft.casecheck.entiry.ResourceInfo">
+        insert into RESOURCE_INFO
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="lid != null">
+                LID,
+            </if>
+            <if test="name != null">
+                NAME,
+            </if>
+            <if test="pid != null">
+                PID,
+            </if>
+            <if test="url != null">
+                URL,
+            </if>
+            <if test="icon != null">
+                ICON,
+            </if>
+            <if test="isOtherProgram != null">
+                IS_OTHER_PROGRAM,
+            </if>
+            <if test="serialNo != null">
+                SERIAL_NO,
+            </if>
+            <if test="isLeaf != null">
+                IS_LEAF,
+            </if>
+            <if test="leve != null">
+                LEVE,
+            </if>
+            <if test="status != null">
+                STATUS,
+            </if>
+            <if test="isDelete != null">
+                IS_DELETE,
+            </if>
+            <if test="creatorId != null">
+                CREATOR_ID,
+            </if>
+            <if test="creator != null">
+                CREATOR,
+            </if>
+            <if test="modifierId != null">
+                MODIFIER_ID,
+            </if>
+            <if test="modifier != null">
+                MODIFIER,
+            </if>
+            <if test="create != null">
+                GMT_CREATE,
+            </if>
+            <if test="modified != null">
+                GMT_MODIFIED,
+            </if>
+            <if test="urlLid != null">
+                URL_LID,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="lid != null">
+                #{lid,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="pid != null">
+                #{pid,jdbcType=VARCHAR},
+            </if>
+            <if test="url != null">
+                #{url,jdbcType=VARCHAR},
+            </if>
+            <if test="icon != null">
+                #{icon,jdbcType=VARCHAR},
+            </if>
+            <if test="isOtherProgram != null">
+                #{isOtherProgram},
+            </if>
+            <if test="serialNo != null">
+                #{serialNo},
+            </if>
+            <if test="isLeaf != null">
+                #{isLeaf},
+            </if>
+            <if test="leve != null">
+                #{leve},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete},
+            </if>
+            <if test="creatorId != null">
+                #{creatorId,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="modifierId != null">
+                #{modifierId,jdbcType=VARCHAR},
+            </if>
+            <if test="modifier != null">
+                #{modifier,jdbcType=VARCHAR},
+            </if>
+            <if test="create != null">
+                #{create,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modified != null">
+                #{modified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="urlLid != null">
+                #{urlLid,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="update" parameterType="com.greatsoft.casecheck.entiry.ResourceInfo">
+        update RESOURCE_INFO
+        <set>
+            <if test="name != null">
+                NAME = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="url != null">
+                URL = #{url,jdbcType=VARCHAR},
+            </if>
+            <if test="icon != null">
+                ICON = #{icon,jdbcType=VARCHAR},
+            </if>
+            <if test="isOtherProgram != null">
+                IS_OTHER_PROGRAM = #{isOtherProgram,jdbcType=DECIMAL},
+            </if>
+            <if test="serialNo != null">
+                SERIAL_NO = #{serialNo,jdbcType=DECIMAL},
+            </if>
+            <if test="modifierId != null">
+                MODIFIER_ID = #{modifierId,jdbcType=VARCHAR},
+            </if>
+            <if test="modifier != null">
+                MODIFIER = #{modifier,jdbcType=VARCHAR},
+            </if>
+            <if test="modified != null">
+                GMT_MODIFIED = #{modified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="urlLid != null">
+                URL_LID = #{urlLid,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where ID = #{id,jdbcType=VARCHAR}
+    </update>
+    <delete id="deleteByLid" parameterType="java.lang.String">
+        DELETE FROM RESOURCE_INFO
+        WHERE LID = #{lid}
+    </delete>
+
+</mapper>

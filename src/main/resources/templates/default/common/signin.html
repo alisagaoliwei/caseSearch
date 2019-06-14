@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml"
+	  xmlns:v-on="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>登录</title>
+<!--<link rel="stylesheet" th:href="@{/lib/bootstrap/3.3.5/css/bootstrap.min.css}" />-->
+<link rel="stylesheet" th:href="@{/{path}/css/common/style.css(path=${staticFormwork})}" />
+<script th:src="@{/{path}/js/tool/jquery.min.js(path=${staticFormwork})}"></script>
+<!--<script th:src="@{/lib/bootstrap/3.3.5/js/bootstrap.min.js}"></script>-->
+<script th:src="@{/{path}	/js/tool/vue.js(path=${staticFormwork})}"></script>
+</head>
+<body id="vm_info" onkeydown="keyLogin();">
+	<div class="header">
+	    <!--<div class="title"><p>医疗卫生机构和人员注册管理系统</p></div>-->
+		<!-- <div class="header_logoImg">
+		    
+			<img th:src="@{/img/login/logo.png}" /> 
+		</div> -->
+		<div class="header_right">
+			<!-- <a href="">退出</a> -->
+		</div>
+		<div style="clear: both;"></div>
+	</div>
+	<div class="login_center">
+		<div class="login_content">
+			<div class="">
+				<div style="padding: 0 14px;">
+					<p style="text-align: center; font-size: 24px; margin: 20px auto">登录</p>
+					<div id="myTabContent" class="tab-content">
+
+							<div id="login_div1">
+								<input type="text" class="login_input1" placeholder="请输账号" v-model="formData.account"
+								/>
+								<input type="password" class="login_input2" placeholder="请输密码" v-model="formData.password" v-on:input="deleteStyle()"
+									/>
+								<div style="height: 20px; font-size: 16px; margin-bottom: 30px;color:red;">
+									<p v-bind:style="styleObject">{{message}}</p>
+								</div>
+								<button type="button" id="search" class="login_btn" v-on:click="login()"  :disabled="disabledButton" >登录</button>
+							</div>
+						
+
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<script th:inline="javascript">
+	 /*<![CDATA[*/
+	  var vm_info=new Vue({
+		  el:"#vm_info",
+		  data:{
+			  formData:{
+				  account:'',
+				  password:''
+			  },
+			  styleObject:{
+				  display:'none'
+			  },
+			  message:'',
+			  disabledButton:false
+		  },
+		  methods:{
+			  login:function(){
+				  $.ajax({
+	    				type : "post",
+	    				url : "/navigation/signin",
+	    				async : false,
+	    				data : JSON.stringify(vm_info.formData),
+	    				contentType : "application/json; charset=utf-8",
+	    				dataType : "json",
+	    				success : function(data) {
+							 if(data.status == 0){
+								window.location.href="/navigation/home";
+							 }else{
+								alert(data.message)
+							 }
+	    				}
+	    			}); 
+			  },
+			  keyLogin:function () {
+				  if (event.keyCode==13)  //回车键的键值为13
+				    $("#search").click(); //调用登录按钮的登录事件
+				 },
+			  deleteStyle:function(){
+				  vm_info.styleObject.display="none";
+				  vm_info.disabledButton=false;
+			  }
+		  }
+	  })
+	 
+		/*]]>*/
+	 </script>
+</body>
+</html>

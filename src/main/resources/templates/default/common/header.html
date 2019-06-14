@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="head">
+<header class="navbar-wrapper">
+	<div class="navbar navbar-fixed-top">
+		<div class="container-fluid cl"> 
+			<img th:src="@{/{path}/img/login/head.png(path=${staticFormwork})}" style="display:inline-block;width:50px;height:50px;vertical-align:middle;padding-top:5px;float:left">
+			<div class="head-left-text">
+				<p class="margin-bottom" style="font-size:18px;">国家全民健康信息平台</p>
+				<p class="margin-bottom" style="font-size:12px;">基层卫生子系统（国家基层医疗卫生综合管理平台）</p>
+			</div>
+			<a aria-hidden="false" class="nav-toggle Hui-iconfont visible-xs" href="javascript:;">&#xe667;</a>
+			<nav id="Hui-userbar" class="nav navbar-nav navbar-userbar hidden-xs">
+				<ul class="cl">
+					<li style="margin-right:20px;"><i class="Hui-iconfont" style="font-size:18px;vertical-align:middle;margin-right:5px;">&#xe60a;</i>欢迎登录</li>
+					<li id="Hui-msg"> <a href="javascript:;" onclick="logout()"><i class="Hui-iconfont" style="font-size:18px">&#xe726;</i></a> </li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</header>
+</div>
+</body>
+</html>

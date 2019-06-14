@@ -1,0 +1,476 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" th:href="@{/{path}/h-ui/css/H-ui.min.css(path=${staticFormwork})}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/{path}/h-ui.admin/css/H-ui.admin.css(path=${staticFormwork})}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/{path}/h-ui.admin/css/style.css(path=${staticFormwork})}"/>
+    <link rel="stylesheet" type="text/css"
+          th:href="@{/{path}/lib/Hui-iconfont/1.0.8/iconfont.css(path=${staticFormwork})}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/{path}/h-ui.admin/skin/default/skin.css(path=${staticFormwork})}"
+          id="skin"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/{path}/h-ui.admin/css/style.css(path=${staticFormwork})}"/>
+    <link rel="stylesheet" type="text/css"
+          th:href="@{/{path}/lib/bootstrap-datetimepicker/datetimepicker.css(path=${staticFormwork})}"/>
+    <link rel="stylesheet" type="text/css"
+          th:href="@{/{path}/lib/Hui-iconfont/1.0.8/iconfont.css(path=${staticFormwork})}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/{path}/css/lib/theme-chalk/index.css(path=${staticFormwork})}"/>
+   <!--  <link rel="stylesheet" type="text/css" th:href="@{https://unpkg.com/element-ui/lib/theme-chalk/index.css}"/> -->
+    <!-- <link rel="stylesheet" th:href="@{/{path}/css/lib/theme-chalk/fonts/element-icons.ttf(path=${staticFormwork})}"/>
+    <link rel="stylesheet" th:href="@{/{path}/css/lib/theme-chalk/fonts/element-icons.woff(path=${staticFormwork})}"/> -->
+    <title>导航系统</title>
+    <style>
+        .head-left-text {
+            display: table-cell;
+            vertical-align: middle;
+            height: 50px;
+            padding-top: 5px;
+            margin-left: 8px;
+        }
+
+        .margin-bottom {
+            margin-bottom: 0 !important;
+            margin-left: 8px;
+            color: #017BCE;
+            font-family: MicrosoftYaHei;
+        }
+
+        dl a {
+            color: #fff;
+        }
+
+        dl a:hover, dl a:active, dl a:focus {
+            color: #fff;
+            text-decoration: none
+        }
+
+        .sss {
+            background: rgb(30, 136, 229)
+        }
+
+        .active {
+            background-color: #017BCE
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .Hui-aside {
+            width: 230px;
+
+        }
+
+        .Hui-article-box {
+            left: 230px;
+        }
+
+        .Hui-aside .menu_dropdown li a {
+            color: #fefefe;
+            border-bottom: none
+        }
+
+        .Hui-aside .menu_dropdown li {
+            list-style: none;
+        }
+        .Hui-aside .menu_dropdown ul[role="menu"] li[role="menuitem"] {
+            /*border-bottom:1px solid #026CB4;*/
+        background-color: #1E88E5 !important;
+        }
+         .Hui-aside .menu_dropdown ul[role="menu"] li[role="menuitem"]:hover {
+            background-color: #017BCE !important;
+        }
+
+        .Hui-aside .menu_dropdown span {
+            display: inline-block;
+        }
+
+        .el-submenu__title {
+            color: #f0f0f0;
+        }
+
+        .icon-menu {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background: #f0f0f0;
+        }
+        .el-submenu .el-menu-item {
+            height: 56px;
+        }
+
+
+    </style>
+</head>
+<body id="vm_info">
+<div id="app">
+    <!--_header 作为公共模版分离出去-->
+    <div class="navbar navbar-fixed-top">
+        <div class="container-fluid cl">
+            <img src=""
+                 style="display:inline-block;width:50px;height:50px;vertical-align:middle;padding-top:5px;float:left"
+                 id="iconUrl">
+            <div class="head-left-text">
+                <p class="margin-bottom" style="font-size:18px;" id="topText"></p>
+                <p class="margin-bottom" style="font-size:12px;" id="downText"></p>
+            </div>
+            <a aria-hidden="false" class="nav-toggle Hui-iconfont visible-xs" href="javascript:;">&#xe667;</a>
+            <nav id="Hui-userbar" class="nav navbar-nav navbar-userbar hidden-xs">
+                <ul class="cl">
+                    <li style="margin-right:20px;border-left: 1px solid #f5f5f5;border-right: 1px solid #f5f5f5;padding: 0 38px 0 20px;">
+                        <i class="Hui-iconfont"
+                           style="font-size:26px;vertical-align:middle;margin-right:10px;">&#xe60a;</i>
+                        <span id="username" style="display: inline;"></span></li>
+                    <li id="Hui-msg"><a href="javascript:;" onclick="logout()"><i class="Hui-iconfont"
+                                                                                  style="font-size:22px">&#xe726;</i></a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <!--<div th:include="/common/header :: head"></div>-->
+    <!--/_header 作为公共模版分离出去-->
+
+    <!--_menu 作为公共模版分离出去-->
+    <aside class="Hui-aside">
+        <div class="menu_dropdown" id="menu">
+            <el-row class="tac">
+                <el-col :span="12" style="width: 100%;">
+                    <el-menu
+                            default-active="2"
+                            class="el-menu-vertical-demo"
+                            @open="handleOpen"
+                            @close="handleClose"
+                            background-color="#017BCE"
+                    >
+                        <template v-for="one in menu">
+                            <template v-if="one.childrenList.length==0"><!--只有一级菜单的时候显示-->
+                                <el-menu-item :index="one.id" style="border-bottom:1px solid #026CB4">
+                                    <i class="icon-menu"></i>
+                                    <span slot="title">
+                                        <a :href="one.totalUrl"  target="main">{{one.name}}</a>
+                                    </span>
+                                </el-menu-item>
+                            </template>
+                            <template v-if="one.childrenList.length!=0"><!--有二级也有三级菜单的时候显示-->
+                                <el-submenu :index="one.id" style="border-bottom:1px solid #026CB4;">
+                                    <template slot="title">
+                                        <i class="icon-menu"></i>
+                                        <span>{{one.name}}</span>
+                                    </template>
+                                    <template v-for="(two,i) in one.childrenList">
+                                        <el-menu-item :index="two.id" v-if="two.childrenList.length==0" ><!--二级菜单-->
+                                            <i style="color:#FFFFFF">.</i>
+                                            <a :href="two.totalUrl"  target="main">&nbsp;&nbsp;{{two.name}}</a>
+                                        </el-menu-item>
+                                        <el-submenu :index="two.id" v-if="two.childrenList.length!=0"><!--三级菜单-->
+                                            <template slot="title">
+                                                <i style="color:#FFFFFF">.</i>
+                                                <span>{{two.name}}</span>
+                                            </template>
+                                            <template v-for="(three,i) in two.childrenList">
+                                                <el-menu-item :index="three.id" >
+                                                    <i style="color:#44C5FF;width:2px;height:2px;">.</i>
+                                                    <a :href="three.totalUrl"  target="main">&nbsp;&nbsp;{{three.name}}</a>
+                                                </el-menu-item>
+                                            </template>
+
+                                        </el-submenu>
+                                    </template>
+                                </el-submenu>
+                            </template>
+                        </template>
+                    </el-menu>
+                </el-col>
+            </el-row>
+        </div>
+    </aside>
+    <div class="dislpayArrow hidden-xs">
+        <!--<a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a>-->
+    </div>
+    <!--/_menu 作为公共模版分离出去-->
+
+    <section class="Hui-article-box">
+        <div id="iframe_box" class="Hui-article">
+            <div class="show_iframe">
+                <iframe scrolling="yes" frameborder="0" src="welcome" name="main" id="iframe"></iframe>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" th:src="@{/{path}/lib/jquery/1.9.1/jquery.min.js(path=${staticFormwork})}"></script>
+<script type="text/javascript" th:src="@{/{path}/lib/layer/2.4/layer.js(path=${staticFormwork})}"></script>
+<script type="text/javascript" th:src="@{/{path}/h-ui/js/H-ui.js(path=${staticFormwork})}"></script>
+<script type="text/javascript" th:src="@{/{path}/h-ui.admin/js/H-ui.admin.page.js(path=${staticFormwork})}"></script>
+<script type="text/javascript" th:src="@{/{path}/js/tool/vue.js(path=${staticFormwork})}"></script>
+<script type="text/javascript"
+        th:src="@{/{path}/lib/jquery.contextmenu/jquery.contextmenu.r2.js(path=${staticFormwork})}"></script>
+<script type="text/javascript" th:src="@{/{path}/lib/layer/2.1/layer.js(path=${staticFormwork})}"></script>
+<script type="text/javascript" th:src="@{/{path}/lib/laypage/1.2/laypage.js(path=${staticFormwork})}"></script>
+<script type="text/javascript" th:src="@{/{path}/lib/layer/2.1/extend/layer.ext.js(path=${staticFormwork})}"></script>
+<script type="text/javascript" th:src="@{/{path}/js/lib/vue.js(path=${staticFormwork})}"></script>
+<script type="text/javascript" th:src="@{/{path}/js/lib/index.js(path=${staticFormwork})}"></script>
+<!--/_footer /作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+    $('#menu').on('click', 'dl dt', function () {
+        $(this).toggleClass('selected')
+        $(this).siblings('dd').toggle();
+        console.log($(this).next().length == 0)
+        if ($(this).next().length !== 0) {
+            if ($(this).hasClass('selected')) {
+                $(this).parent('dl').addClass('sss')
+            } else {
+                $(this).parent('dl').removeClass('sss')
+            }
+        } else {
+
+        }
+
+    })
+    $('#menu').on('click', 'dl dd ul li', function () {
+        $(this).addClass('active').siblings().removeClass('active')
+    })
+
+    function logout() {
+        $.ajax({
+            async: 'true',
+            type: 'get',
+            url: 'logout',
+            success: function (data) {
+                $(location).attr('href', data);
+            },
+            error: function (data) {
+                console.log(data)
+            }
+        })
+    }
+
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                currentPage4: 4,
+                pageNumber: 1,
+                menu:[
+                    {
+                        "id": "515B6E0BC12743ED8794573FC72D5376",
+                        "lid": "A59DFC8EC86745AE9B89B5DDA3971825",
+                        "name": "卫生人力",
+                        "pid": null,
+                        "url": "/openresource.jsp?resid=I4028819501690e910e919fd4016919b7d9e21147&user=admin&password=admin",
+                        "icon": null,
+                        "serialNo": "1",
+                        "isLeaf": 0,
+                        "isOtherProgram": 0,
+                        "leve": 1,
+                        "isChoose": 0,
+                        "totalUrl": "http://192.168.1.55:8090/smartbi/vision/openresource.jsp?resid=I4028819501690e910e919fd4016919b7d9e21147&user=admin&password=admin",
+                        "childrenList": []
+                    },
+                    {
+                        "id": "295C8BDD1FF443DAABA815B2AFA41CE6",
+                        "lid": "64268688C24B400AB09305499A4D94AB",
+                        "name": "百度",
+                        "pid": null,
+                        "url": "baidu.com",
+                        "icon": null,
+                        "serialNo": "2",
+                        "isLeaf": 0,
+                        "isOtherProgram": 0,
+                        "leve": 1,
+                        "isChoose": 0,
+                        "totalUrl": "http://14.215.177.38:80/baidu.com",
+                        "childrenList": []
+                    },
+                    {
+                        "id": "1111",
+                        "lid": null,
+                        "name": "导航管理",
+                        "pid": null,
+                        "url": null,
+                        "icon": null,
+                        "serialNo": null,
+                        "isLeaf": 0,
+                        "isOtherProgram": 0,
+                        "leve": 0,
+                        "isChoose": 0,
+                        "totalUrl": null,
+                        "childrenList": [
+                            {
+                                "id": "2222",
+                                "lid": null,
+                                "name": "菜单管理",
+                                "pid": null,
+                                "url": null,
+                                "icon": null,
+                                "serialNo": null,
+                                "isLeaf": 0,
+                                "isOtherProgram": 0,
+                                "leve": 0,
+                                "isChoose": 0,
+                                "totalUrl": "menu-maintenance",
+                                "childrenList": [
+                                    {
+                                        "id": "3333",
+                                        "lid": null,
+                                        "name": "三级菜单",
+                                        "pid": null,
+                                        "url": null,
+                                        "icon": null,
+                                        "serialNo": null,
+                                        "isLeaf": 0,
+                                        "isOtherProgram": 0,
+                                        "leve": 0,
+                                        "isChoose": 0,
+                                        "totalUrl": "role-management",
+                                        "childrenList": []
+                                    },
+                                ]
+                            },
+                            {
+                                "id": "444444",
+                                "lid": null,
+                                "name": "角色管理",
+                                "pid": null,
+                                "url": null,
+                                "icon": null,
+                                "serialNo": null,
+                                "isLeaf": 0,
+                                "isOtherProgram": 0,
+                                "leve": 0,
+                                "isChoose": 0,
+                                "totalUrl": "role-management",
+                                "childrenList": []
+                            },
+                            {
+                                "id": "555555",
+                                "lid": null,
+                                "name": "人员管理",
+                                "pid": null,
+                                "url": null,
+                                "icon": null,
+                                "serialNo": null,
+                                "isLeaf": 0,
+                                "isOtherProgram": 0,
+                                "leve": 0,
+                                "isChoose": 0,
+                                "totalUrl": "personnel-management",
+                                "childrenList": []
+                            },
+                            {
+                                "id": "66666",
+                                "lid": null,
+                                "name": "基准地址管理",
+                                "pid": null,
+                                "url": null,
+                                "icon": null,
+                                "serialNo": null,
+                                "isLeaf": 0,
+                                "isOtherProgram": 0,
+                                "leve": 0,
+                                "isChoose": 0,
+                                "totalUrl": "urlbase-path-management",
+                                "childrenList": []
+                            }
+                        ]
+                    },
+                    {
+                        "id": "77777",
+                        "lid": null,
+                        "name": "测试菜单",
+                        "pid": null,
+                        "url": null,
+                        "icon": null,
+                        "serialNo": null,
+                        "isLeaf": 0,
+                        "isOtherProgram": 0,
+                        "leve": 0,
+                        "isChoose": 0,
+                        "totalUrl": null,
+                        "childrenList": [
+                            {
+                                "id": "88888",
+                                "lid": null,
+                                "name": "菜单管理二级",
+                                "pid": null,
+                                "url": null,
+                                "icon": null,
+                                "serialNo": null,
+                                "isLeaf": 0,
+                                "isOtherProgram": 0,
+                                "leve": 0,
+                                "isChoose": 0,
+                                "totalUrl": "menu-maintenance",
+                                "childrenList": []
+                            },
+                            {
+                                "id": "999999",
+                                "lid": null,
+                                "name": "角色管理二级",
+                                "pid": null,
+                                "url": null,
+                                "icon": null,
+                                "serialNo": null,
+                                "isLeaf": 0,
+                                "isOtherProgram": 0,
+                                "leve": 0,
+                                "isChoose": 0,
+                                "totalUrl": "role-management",
+                                "childrenList": []
+                            },
+
+                        ]
+                    },
+                ],
+            }
+        },
+        created: function () {
+            var that=this;
+            $.ajax({
+                type: 'get',
+                url: '/navigation/homes',
+                cache: false,
+                dataType: 'json',
+                traditional: true,
+                success: function (data) {
+                    //debugger
+                    if (data.status == 0) {
+                        var iconUrl = data.objMap.objects.iconUrl;
+                        var topText = data.objMap.objects.topText;
+                        var downText = data.objMap.objects.downText;
+                        var username = data.objMap.objects.name;
+                        $("#topText").html(topText);
+                        $("#downText").html(downText);
+                        $("#username").html(username);
+                        $("#iconUrl").attr("src", iconUrl);
+                        that.menu=data.objMap.objects.parents;
+                    }
+                },
+                error: function (data) {
+                    console.log(data)
+                }
+            })
+        },
+        mounted: function () {
+
+
+
+        },
+        methods: {
+            handleOpen(key, keyPath) {
+                console.log(key, keyPath);
+            },
+            handleClose(key, keyPath) {
+                console.log(key, keyPath);
+            }
+        },
+    })
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

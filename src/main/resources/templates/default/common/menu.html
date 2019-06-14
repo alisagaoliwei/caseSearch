@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <body>
+  
+    <div th:fragment="copy">
+       <aside class="Hui-aside">
+			<div class="menu_dropdown">
+				<dl id="menu-article">
+					<dt><i class="Hui-iconfont">&#xe616;</i> 导航管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
+					<dd>
+						<ul>
+							<li><a href="menu-maintenance" th:href="menu-maintenance" >菜单维护</a></li>
+							<li><a href="menu-maintenance" th:href="personnel-management" >人员管理</a></li>
+							<li><a href="menu-maintenance" th:href="role-management" >角色管理</a></li>
+						</ul>
+					</dd>
+				</dl>
+			</div>
+		</aside>
+		<div class="dislpayArrow hidden-xs">
+			<a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a>
+		</div>
+    </div>
+  
+  </body>
+</html>

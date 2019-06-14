@@ -1,0 +1,12 @@
+gxsoft:
+    #获取code
+    indexUrl: http://47.92.85.247/passport/oauth/authorize?scope=all&client_id=test123&response_type=code
+    #获取token
+    getToken: http://47.92.85.247/passport/oauth/token?grant_type=authorization_code
+    #重定向地址
+    redirectUrl: http://192.168.1.148:8182/navigation/oauth/code
+    client: test123:test123
+
+    #当前系统前缀
+    prefix: http://192.168.1.148:8182/navigation/
+

@@ -1,0 +1,8 @@
+mybatis:
+    type-aliases-package: net.greatsoft.navigation.system.entity.*.*
+    mapper-locations: classpath:mybatis/default/*.xml
+    config-location: classpath:mybatis/mybatis-config.xml
+pagehelper:
+    helper-dialect: oracle
+
+

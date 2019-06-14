@@ -1,0 +1,15 @@
+ui:
+  theme:
+     style: default
+  skin:
+     style: default
+  home:
+     logo:
+          uri: icon/icon.png
+     primary:
+          label: 导航系统
+     secondary:
+          label: 基层卫生子系统（国家基层医疗卫生综合管理平台)
+
+
+

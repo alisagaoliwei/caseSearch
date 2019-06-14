@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greatsoft.casecheck.mapper.RoleResourceInfoMapper">
+
+    <select id="findResourceLidByRoleLid" resultType="java.lang.String" parameterType="java.lang.String">
+        select RESOURCE_INFO_LID
+        from ROLE_RESOURCE_INFO
+        where ROLE_LID = #{roleLid}
+    </select>
+
+    <delete id="deleteByResourceLId" parameterType="java.lang.String">
+        DELETE FROM ROLE_RESOURCE_INFO
+        WHERE RESOURCE_INFO_LID = #{resourceLid}
+    </delete>
+
+    <delete id="deleteByRoleLid" parameterType="java.lang.String">
+        DELETE FROM ROLE_RESOURCE_INFO
+        WHERE ROLE_LID = #{roleLid}
+    </delete>
+
+
+    <insert id="insertList" useGeneratedKeys="false" parameterType="java.util.List">
+        insert ALL
+        <foreach collection="list" item="item">
+            into ROLE_RESOURCE_INFO
+            (ID, ROLE_LID, RESOURCE_INFO_LID)
+            values
+            (#{item.id}, #{item.roleLid}, #{item.resourceLid})
+        </foreach>
+        SELECT 1 FROM DUAL
+    </insert>
+
+
+    <insert id="insertSelective" parameterType="com.greatsoft.casecheck.entiry.RoleResourceInfo" >
+        insert into ROLE_RESOURCE_INFO
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                ID,
+            </if>
+            <if test="roleLid != null" >
+                ROLE_LID,
+            </if>
+            <if test="resourceLid != null" >
+                RESOURCE_INFO_LID,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="roleLid != null" >
+                #{roleLid,jdbcType=VARCHAR},
+            </if>
+            <if test="resourceLid != null" >
+                #{resourceLid,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+</mapper>

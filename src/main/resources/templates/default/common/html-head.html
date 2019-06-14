@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:fragment="common_header(title,links)">
+<meta charset="utf-8">
+
+<link rel="stylesheet" type="text/css" th:href="@{/{path}/h-ui/css/H-ui.min.css(path=${staticFormwork})}" />
+<link rel="stylesheet" type="text/css" th:href="@{/{path}/h-ui.admin/css/H-ui.admin.css(path=${staticFormwork})}" />
+<link rel="stylesheet" type="text/css" th:href="@{/{path}/lib/Hui-iconfont/1.0.8/iconfont.css(path=${staticFormwork})}" />
+<link rel="stylesheet" type="text/css" th:href="@{/{path}/h-ui.admin/skin/default/skin.css(path=${staticFormwork})}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/{path}/h-ui.admin/css/style.css(path=${staticFormwork})}" />
+
+<title th:replace="${title}">导航系统</title>
+<th:block th:replace="${links}" />
+</head>
+</html>

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" th:href="@{/{path}/h-ui/css/H-ui.min.css(path=${staticFormwork})}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/{path}/h-ui.admin/css/H-ui.admin.css(path=${staticFormwork})}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/{path}/h-ui.admin/css/style.css(path=${staticFormwork})}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/{path}/lib/Hui-iconfont/1.0.8/iconfont.css(path=${staticFormwork})}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/{path}/h-ui.admin/skin/default/skin.css(path=${staticFormwork})}" id="skin" />
+    <link rel="stylesheet" type="text/css" th:href="@{/{path}/h-ui.admin/css/style.css(path=${staticFormwork})}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/{path}/lib/bootstrap-datetimepicker/datetimepicker.css(path=${staticFormwork})}"  />
+    <title>导航系统</title>
+    <style>
+        .head-left-text{display: table-cell;vertical-align:middle;height:50px;padding-top:5px;margin-left:8px;}
+        .margin-bottom{margin-bottom:0 !important;margin-left:8px;color:#017BCE;font-family:MicrosoftYaHei;}
+        .pagination > li {display: inline;}
+        .pull-right {float: right !important;}
+        .pagination > li:first-child > a, .pagination > li:first-child > span {margin-left: 0;border-top-left-radius: 4px;border-bottom-left-radius: 4px;}
+        .pagination > .disabled > a{color: #777;cursor: not-allowed;background-color: #fff;border-color: #ddd;}
+        .pagination > li > a, .pagination > li > span {position: relative;float: left;padding: 6px 12px;margin-left: -1px;line-height: 1.42857143;color: #337ab7;text-decoration: none;background-color: #fff;border: 1px solid #ddd;}
+    </style>
+</head>
+<body>
+     <nav class="breadcrumb">
+         <i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 导航管理 <spanclass="c-gray en">&gt;</span> 基准地址管理 
+     </nav>
+     <div class="page-container">
+         <div class="text-l" style="margin-bottom:15px;">
+             <form>
+                                           名称：<input type="text" class="input-text" style="width:250px" placeholder="请输入名称"  name="name" id="name">
+                 <button type="button"  id="searchBtn" class="btn btn-primary radius" onclick="personCount(1)"><i class="Hui-iconfont">&#xe665;</i> 查询</button>
+                 <button type="button" class="btn btn-primary radius" onclick="modaldemo_save()"><i class="Hui-iconfont">&#xe600;</i> 新增基准地址</button>
+             </form>
+         </div>
+         <table class="table table-border table-bg table-bordered">
+             <thead>
+                 <tr>
+                     <th width="100">序号</th>
+                     <th>名称</th>
+                     <th>前缀</th>
+                     <th>请求IP</th>
+                     <th>端口号</th>
+                     <th>上下文</th>
+                     <th>创建时间</th>
+                     <th width="150">操作</th>
+                 </tr>
+             </thead>
+             <tbody id="dataDiv">
+             </tbody>
+         </table>
+         <div style="margin-top: 20px;color:blue;" id="myul" class="pagination pull-right"></div>
+     </div>
+     <!-- 新增弹框 -->
+     <div id="modal-demo-save" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+         <div class="modal-dialog">
+             <div class="modal-content radius">
+                 <div class="modal-header">
+                     <h3 class="modal-title">新增基准地址信息</h3>
+                     <a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+                 </div>
+                 <div class="modal-body">
+                     <form action="" method="post" class="form form-horizontal" id="demoform-2">
+                         <div class="row cl">
+                             <label class="form-label col-xs-4 col-sm-3">名称：</label>
+                             <div class="formControls col-xs-8 col-sm-9">
+                                 <input type="text" class="input-text" autocomplete="off" placeholder="名称" id="nameSave">
+                             </div>
+                         </div>
+                         <div class="row cl">
+                             <label class="form-label col-xs-4 col-sm-3">前缀：</label>
+                             <div class="formControls col-xs-8 col-sm-9">
+                                 <input type="text" class="input-text" autocomplete="off" placeholder="名称" id="prefixSave" value="http://">
+                             </div>
+                         </div>
+                         <div class="row cl">
+                             <label class="form-label col-xs-4 col-sm-3">请求ip：</label>
+                             <div class="formControls col-xs-8 col-sm-9">
+                                 <input type="text" class="input-text" autocomplete="off" placeholder="请求ip" id="ipSave">
+                             </div>
+                         </div>
+                         <div class="row cl">
+                             <label class="form-label col-xs-4 col-sm-3">端口号：</label>
+                             <div class="formControls col-xs-8 col-sm-9">
+                                 <input type="number" class="input-text" autocomplete="off" placeholder="请求ip" id="portSave">
+                             </div>
+                         </div>
+                         <div class="row cl">
+                             <label class="form-label col-xs-4 col-sm-3">上下文：</label>
+                             <div class="formControls col-xs-8 col-sm-9">
+                                 <input type="text" class="input-text" autocomplete="off" placeholder="请求ip" id="pathSave">
+                             </div>
+                         </div>
+                     </form>
+                 </div>
+                 <div class="modal-footer">
+                     <button class="btn btn-primary" onclick="personSave()">确定</button>
+                     <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                 </div>
+             </div>
+         </div>
+     </div>
+     <!-- 修改弹框 -->
+     <div id="modal-demo-update" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+         <div class="modal-dialog">
+             <div class="modal-content radius">
+                 <div class="modal-header">
+                     <h3 class="modal-title">修改基准地址信息</h3>
+                     <a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+                 </div>
+                 <div class="modal-body">
+                     <form action="" method="post" class="form form-horizontal" id="demoform-1">
+                         <div class="row cl">
+                             <label class="form-label col-xs-4 col-sm-3">名称：</label>
+                             <div class="formControls col-xs-8 col-sm-9">
+                                 <input type="hidden" class="input-text"  id="lidUpdate" >
+                                 <input type="text" class="input-text" autocomplete="off" placeholder="名称" id="nameUpdate">
+                             </div>
+                         </div>
+                         <div class="row cl">
+                             <label class="form-label col-xs-4 col-sm-3">前缀：</label>
+                             <div class="formControls col-xs-8 col-sm-9">
+                                 <input type="text" class="input-text" autocomplete="off" placeholder="名称" id="prefixUpdate">
+                             </div>
+                         </div>
+                         <div class="row cl">
+                             <label class="form-label col-xs-4 col-sm-3">请求ip：</label>
+                             <div class="formControls col-xs-8 col-sm-9">
+                                 <input type="text" class="input-text" autocomplete="off" placeholder="请求ip" id="ipUpdate">
+                             </div>
+                         </div>
+                         <div class="row cl">
+                             <label class="form-label col-xs-4 col-sm-3">端口号：</label>
+                             <div class="formControls col-xs-8 col-sm-9">
+                                 <input type="number" class="input-text" autocomplete="off" placeholder="请求ip" id="portUpdate">
+                             </div>
+                         </div>
+                         <div class="row cl">
+                             <label class="form-label col-xs-4 col-sm-3">上下文：</label>
+                             <div class="formControls col-xs-8 col-sm-9">
+                                 <input type="text" class="input-text" autocomplete="off" placeholder="请求ip" id="pathUpdate">
+                             </div>
+                         </div>
+                     </form>
+                 </div>
+                 <div class="modal-footer">
+                     <button class="btn btn-primary" onclick="personEdit()">确定</button>
+                     <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                 </div>
+             </div>
+         </div>
+     </div>
+     <!--_footer 作为公共模版分离出去-->
+     <script type="text/javascript" th:src="@{/{path}/lib/jquery/1.9.1/jquery.min.js(path=${staticFormwork})}"></script>
+     <script type="text/javascript" th:src="@{/{path}/lib/layer/2.4/layer.js(path=${staticFormwork})}"></script>
+     <script type="text/javascript" th:src="@{/{path}/h-ui/js/H-ui.js(path=${staticFormwork})}"></script>
+     <script type="text/javascript" th:src="@{/{path}/h-ui.admin/js/H-ui.admin.page.js(path=${staticFormwork})}"></script>
+     <script type="text/javascript" th:src="@{/{path}/js/tool/vue.js(path=${staticFormwork})}"></script>
+     <script type="text/javascript" th:src="@{/{path}/lib/jquery.contextmenu/jquery.contextmenu.r2.js(path=${staticFormwork})}"></script>
+     <script type="text/javascript" th:src="@{/{path}/lib/layer/2.1/layer.js(path=${staticFormwork})}"></script>
+     <script type="text/javascript" th:src="@{/{path}/lib/laypage/1.2/laypage.js(path=${staticFormwork})}"></script>
+     <script type="text/javascript" th:src="@{/{path}/lib/layer/2.1/extend/layer.ext.js(path=${staticFormwork})}"></script>
+     <!--/_footer /作为公共模版分离出去-->
+     <script type="text/javascript">
+                $(function(){
+                    personCount(1)
+                })
+                //新增弹框
+                function modaldemo_save(){
+                    $("#modal-demo-save").modal("show")
+                }
+                //修改弹框
+                function modaldemo_update(lid){
+                    var lid = lid;
+                    $.ajax({
+                        async:'true',
+                        type:'get',
+                        url:'url-base-paths/' + lid,
+                        dataType:'json',
+                        contentType:'application/x-www-form-urlencoded;charset=utf-8',
+                        success:function(data){
+                            if (data.status == 0) {
+                                var person = data.objMap.objects;
+                                $('#lidUpdate').val(person.lid);
+                                $('#nameUpdate').val(person.name);
+                                $('#ipUpdate').val(person.ip);
+                                $('#portUpdate').val(person.port);
+                                $('#pathUpdate').val(person.path);
+                                $('#prefixUpdate').val(person.prefix);
+                                $("#modal-demo-update").modal("show")
+                            }else {
+                                alert(data.message)
+                                return;
+                            }
+                        },
+                        error:function(data){
+                            alert("接口调用失败")
+                            return;
+                        }
+                    })
+                }
+                //修改
+                function personEdit(){
+                    if ($.trim($('#nameUpdate').val()) == null || $.trim($('#nameUpdate').val()) == "") {
+                        alert("名称不能为空")
+                        return false;
+                    }
+
+                    if ($.trim($('#prefixUpdate').val()) == null || $.trim($('#prefixUpdate').val()) == "") {
+                        alert("前缀不能为空")
+                        return false;
+                    }
+
+                    if ($.trim($('#ipUpdate').val()) == null || $.trim($('#ipUpdate').val()) == "") {
+                        alert("请求ip不能为空")
+                        return false;
+                    }
+
+                    if ($.trim($('#portUpdate').val()) == null || $.trim($('#portUpdate').val()) == "") {
+                        alert("端口不能为空")
+                        return false;
+                    }
+
+                    if ($.trim($('#pathUpdate').val()) == null || $.trim($('#pathUpdate').val()) == "") {
+                        alert("上下文不能为空")
+                        return false;
+                    }
+                    var personForm = {
+                        lid:$('#lidUpdate').val(),
+                        name:$('#nameUpdate').val(),
+                        ip:$('#ipUpdate').val(),
+                        port:$('#portUpdate').val(),
+                        prefix:$('#prefixUpdate').val(),
+                        path:$('#pathUpdate').val()
+                    }
+                    $.ajax({
+                        async:true,
+                        type:'put',
+                        url:'url-base-paths',
+                        data:JSON.stringify(personForm),
+                        dataType:'json',
+                        contentType:'application/json;charset=UTF-8',
+                        success:function(data){
+                            if (data.status == 0) {
+                                alert("修改成功")
+                                $("#modal-demo-update").modal("hide")
+                                location.replace(location.href);
+                            }else{
+                                alert(data.message)
+                                $("#modal-demo-update").modal("hide")
+                                return;
+                            }
+
+                        },
+                        error:function(data){
+                            alert("接口调用失败")
+                            $("#modal-demo-update").modal("hide")
+                            return;
+                        }
+                    })
+                }
+                //新增
+                function personSave(){
+                    if ($.trim($('#nameSave').val()) == null || $.trim($('#nameSave').val()) == "") {
+                        alert("名称不能为空")
+                        return false;
+                    }
+
+                    if ($.trim($('#prefixSave').val()) == null || $.trim($('#prefixSave').val()) == "") {
+                        alert("前缀不能为空")
+                        return false;
+                    }
+
+                    if ($.trim($('#ipSave').val()) == null || $.trim($('#ipSave').val()) == "") {
+                        alert("请求ip不能为空")
+                        return false;
+                    }
+
+                    if ($.trim($('#portSave').val()) == null || $.trim($('#portSave').val()) == "") {
+                        alert("端口不能为空")
+                        return false;
+                    }
+
+                    if ($.trim($('#pathSave').val()) == null || $.trim($('#pathSave').val()) == "") {
+                        alert("上下文不能为空")
+                        return false;
+                    }
+                    var personForm = {
+                        name:$('#nameSave').val(),
+                        ip:$('#ipSave').val(),
+                        port:$('#portSave').val(),
+                        prefix:$('#prefixSave').val(),
+                        path:$('#pathSave').val()
+                    }
+                    $.ajax({
+                        async:true,
+                        type:'post',
+                        url:'url-base-paths',
+                        data:JSON.stringify(personForm),
+                        dataType:'json',
+                        contentType:'application/json;charset=UTF-8',
+                        success:function(data){
+                            if (data.status == 0) {
+                                alert("新增成功")
+                                $("#modal-demo-update").modal("hide")
+                                location.replace(location.href);
+                            }else{
+                                alert(data.message)
+                                $("#modal-demo-update").modal("hide")
+                                return;
+                            }
+                        },
+                        error:function(data){
+                            alert("接口调用失败")
+                            $("#modal-demo-update").modal("hide")
+                            return;
+                        }
+                    })
+                }
+                //查询
+                function personCount(pageNo){
+                    var obj = {
+                        name:$('#name').val(),
+                        pageNo:pageNo,
+                        pageSize:9
+                    }
+                    $.ajax({
+                        async:true,
+                        type:'get',
+                        url:'url-base-paths/pages',
+                        data:obj,
+                        dataType:'json',
+                        contentType:'application/x-www-form-urlencoded;charset=utf-8',
+                        success:function(data){
+                            if(data.status ==0){
+                                var persons = data.objMap.objects;
+                            }else{
+                                alert(data.message);
+                                return;
+                            }
+                            var html = ''
+                            for(key in persons){
+                                var no = parseInt(key) + 1;
+                                html += '<tr><td>'+no+'</td><td>'+persons[key].name+'</td><td>'+persons[key].prefix+'</td><td>'+persons[key].ip+'</td><td>'+persons[key].port+'</td><td>'+persons[key].path+'</td><td>'+persons[key].create+'</td>'+
+                                    '<td ><a title="修改" href="javascript:;" onclick="modaldemo_update(\''+persons[key].lid+'\')" class="ml-5" style="text-decoration:none;color:#666;margin-right:10px;font-size:16px"><i class="Hui-iconfont">&#xe60c;</i></a><a title="注销" href="javascript:;" onclick="isDelete(\''+persons[key].lid+'\')" class="ml-5" style="text-decoration:none;color:#666;margin-right:10px;font-size:16px;"><i class="Hui-iconfont">&#xe609;</i></a></td></tr>'
+                            }
+                            $('#dataDiv').html(html);
+                            $("#myul").empty();
+                            $("#myul").append("<li class=\"disabled\"><a>总条数："+ data.objMap.total + "</a></li><li class=\"disabled\"><a>页数："+ pageNo + "/"+ data.objMap.pages+ "</a></li>");
+                            if (data.objMap.pageNo == 1) {
+                                $("#myul").append("<li class=\"disabled\"><a>前一页</a></li>");
+                            } else {
+                                $("#myul").append("<li><a style='cursor: pointer;' onclick=\"searchDatas('"+ eval(data.objMap.pageNo - 1)+ "');\">前一页</a></li>");
+                            }
+                            if (data.objMap.pageNo == data.objMap.pages) {
+                                $("#myul").append("<li class=\"disabled\"><a>后一页</a></li>");
+                            } else {
+                                $("#myul").append("<li><a style='cursor: pointer;' onclick=\"searchDatas('"+ eval(data.objMap.pageNo + 1)+ "');\">后一页</a></li>");
+                            }
+
+                        },
+                        error:function(){
+                            alert("接口调用失败")
+                        }
+                    })
+                }
+                //删除
+                function isDelete(lid){
+                    if(confirm("您确定删除此条信息吗？")){
+                        $.ajax({
+                            async:true,
+                            type:'delete',
+                            url:'url-base-paths/'+lid,
+                            dataType:'json',
+                            contentType:'application/json;charset=utf-8',
+                            success:function(data){
+                                if(data.status ==0){
+                                    alert("删除成功");
+                                    location.replace(location.href);
+                                }else{
+                                    alert(data.message);
+                                    return;
+                                }
+                            },
+                            error:function(){
+                                alert("接口调用失败")
+                                return;
+                            }
+                        })
+                    }else{
+                        return;
+                    }
+                }
+            </script>
+</body>
+</html>
+

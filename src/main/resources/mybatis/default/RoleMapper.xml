@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greatsoft.casecheck.mapper.RoleMapper">
+
+    <select id="findRoles" resultType="com.greatsoft.casecheck.entiry.Role">
+        select
+        ID as id,
+        LID as lid,
+        NAME as name,
+        GMT_CREATE as "create",
+        CREATOR as creator
+        from ROLE
+        where STATUS = '0' and IS_DELETE = '0'
+        <if test="name != null and name !=''">
+            and NAME like '%' || #{name} || '%'
+        </if>
+    </select>
+
+    <select id="findRolesNotByLid" resultType="com.greatsoft.casecheck.entiry.Role">
+        select
+        ID as id,
+        LID as lid,
+        NAME as name,
+        GMT_CREATE as "create",
+        CREATOR as creator
+        from ROLE
+        where STATUS = '0' and IS_DELETE = '0' AND LID != #{lid}
+    </select>
+    <select id="findRolesByLid" resultType="com.greatsoft.casecheck.entiry.Role">
+        select
+        ID as id,
+        LID as lid,
+        NAME as name,
+        GMT_CREATE as "create",
+        CREATOR as creator
+        from ROLE
+        where STATUS = '0' and IS_DELETE = '0' and lid = #{lid}
+    </select>
+
+    <select id="findLidsByName" resultType="java.lang.String" parameterType="java.lang.String">
+        select
+        LID as lid
+        from ROLE
+        where STATUS = '0' and IS_DELETE = '0'
+            and NAME = #{name}
+    </select>
+
+    <insert id="insert" parameterType="com.greatsoft.casecheck.entiry.Role">
+        insert into ROLE
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="lid != null">
+                LID,
+            </if>
+            <if test="name != null">
+                NAME,
+            </if>
+            <if test="status != null">
+                STATUS,
+            </if>
+            <if test="isDelete != null">
+                IS_DELETE,
+            </if>
+            <if test="creatorId != null">
+                CREATOR_ID,
+            </if>
+            <if test="creator != null">
+                CREATOR,
+            </if>
+            <if test="modifierId != null">
+                MODIFIER_ID,
+            </if>
+            <if test="modifier != null">
+                MODIFIER,
+            </if>
+            <if test="create != null">
+                GMT_CREATE,
+            </if>
+            <if test="modified != null">
+                GMT_MODIFIED,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="lid != null">
+                #{lid,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete},
+            </if>
+            <if test="creatorId != null">
+                #{creatorId,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="modifierId != null">
+                #{modifierId,jdbcType=VARCHAR},
+            </if>
+            <if test="modifier != null">
+                #{modifier,jdbcType=VARCHAR},
+            </if>
+            <if test="create != null">
+                #{create,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modified != null">
+                #{modified,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+
+    <update id="updateRolesByLid" parameterType="com.greatsoft.casecheck.entiry.Role">
+        update ROLE
+        <set>
+            <if test="name != null">
+                NAME = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                STATUS = #{status,jdbcType=DECIMAL},
+            </if>
+            <if test="isDelete != null">
+                IS_DELETE = #{isDelete,jdbcType=DECIMAL},
+            </if>
+            <if test="modified != null">
+                GMT_MODIFIED = #{modified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modifierId != null">
+                MODIFIER_ID = #{modifierId,jdbcType=VARCHAR},
+            </if>
+            <if test="modifier != null">
+                MODIFIER = #{modifier,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where LID = #{lid,jdbcType=VARCHAR}
+    </update>
+
+    <delete id="deleteRolesByLid" parameterType="java.lang.String">
+        delete from ROLE
+        where LID = #{lid,jdbcType=VARCHAR}
+    </delete>
+</mapper>
