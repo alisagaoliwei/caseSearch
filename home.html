@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>医共体综合管理系统</title>
+  <script src="js/adaptation.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/common.css">
+  <link rel="stylesheet" type="text/css" href="css/index.css">
+</head>
+<body>
+  <div class="title"></div>
+  <div class="content">
+    <div class="contentTable">
+      <ul>
+        <li>专栏</li>
+        <li class="active">专题</li>
+      </ul>
+    </div>
+    <div class="special">
+      <ul class="special1 clearfix">
+      </ul>
+      <ul class="special2 clearfix">
+      </ul>
+    </div>
+  </div>
+  <!--添加编辑框-->
+  <div class="pop addPop" data-id="">
+    <div class="addContent">
+      <div class="addContentTop">
+        <div class="addContentTitle">新增应用</div>
+        <div class="popClose"><img src="img/gbi.png" alt=""></div>
+      </div>
+      <div class="addContentBottom">
+        <div class="formItem">
+          <label for="systemName">系统名称</label>
+          <input id="systemName" type="text">
+          <input type="hidden" id="appliactionId" >
+        </div>
+        <div class="formItem">
+          <label for="RedirectURI">回调地址</label>
+          <input id="RedirectURI" type="text">
+        </div>
+        <div class="formItem">
+          <label for="ClientID">ClientID</label>
+          <input id="ClientID" type="text">
+        </div>
+        <div class="formItem">
+          <label for="ClientSecret">Client-secret</label>
+          <input id="ClientSecret" type="text">
+        </div>
+        <div class="formItem">
+          <label for="homePageURL">获取授权地址</label>
+          <input id="homePageURL" type="text">
+        </div>
+        <div class="submitBtn">确定</div>
+      </div>
+    </div>
+  </div>
+
+  <!--提示框-->
+  <div class="pop reminderPop" data-id="">
+    <div class="reminderContent">
+      <div class="reminderTop">
+        <div class="reminderTitle">提示</div>
+        <div class="popClose"><img src="img/gbi.png" alt=""></div>
+      </div>
+      <div class="reminderCenter">
+        确定删除吗？
+      </div>
+      <div class="reminderBottom">
+        <div class="sureBtn sureDelBtn">确定</div>
+        <div class="closeBtn popClose">取消</div>
+      </div>
+    </div>
+  </div>
+</body>
+<script src="js/jquery-3.2.1.min.js"></script>
+<script src="js/common.js"></script>
+<script>
+  $(function () {
+    getList();
+    // 添加编辑的确认按钮
+    $(".submitBtn").unbind().click(function () {
+      const subObj = {};
+      subObj.shortcutName = $("#systemName").val();
+      subObj.oauthRedirectUri = $("#RedirectURI").val();
+      subObj.oauthClientId = $("#ClientID").val();
+      subObj.oauthClientSecret = $("#ClientSecret").val();
+      subObj.shortcutUrl = $("#homePageURL").val();
+
+      if (!subObj.shortcutName) {
+        tipMsg(2,'请输入系统名称');
+        return
+      }
+      if (!subObj.oauthRedirectUri) {
+        tipMsg(2,'请输入回调地址');
+        return
+      }
+      if (!subObj.oauthClientId) {
+        tipMsg(2,'请输入ClientID');
+        return
+      }
+      if (!subObj.oauthClientSecret) {
+        tipMsg(2,'请输入Client-secret');
+        return
+      }
+      if (!subObj.shortcutUrl) {
+        tipMsg(2,'请输入授权地址');
+        return
+      }
+      var tipMessage = '';
+      var method = '';
+        if ($(".addPop").attr("data-id")) {
+            tipMessage = '修改应用成功';
+            method = 'put';
+        } else {
+            method = 'post';
+            tipMessage = '添加应用成功';
+        }
+      subObj.id = $(".addPop").attr("data-id");
+      $.ajax({
+        url:  "applications",
+        type:method,
+        cache: false,
+        ansyc: true,
+        dataType: 'json',
+        data:JSON.stringify(subObj),
+        contentType : "application/json; charset=utf-8",
+        success: function (res) {
+          const data = res;
+          if (data.status === 0) {
+            $(".addPop").hide();
+            tipMsg(1,tipMessage);
+            getList();
+          } else {
+            tipMsg(0,data.message,15000);
+          }
+        },
+        error: function(err){
+            tipMsg(0,'系统错误');
+        }
+      });
+
+    })
+    //  弹框的确认删除按钮
+    $(".sureDelBtn").unbind().click(function () {
+      const delId = $(".reminderPop").attr("data-id"); // 拿到delid
+      deleteAppliaction(delId);
+    });
+    // 弹框的关闭
+    $(".popClose").unbind().click(function () {
+      $(".sexangle").removeClass("sexangleOn");
+      $(".sexangle1").find(".handle").hide();
+      $(".sexangle1").find(".sexangleTitle").show();
+      $(this).parents(".pop").hide();
+    });
+
+  })
+//  获取列表
+  function getList() {
+      $.ajax({
+          url: "applications", /*v1.0*/
+          type:"get",
+          cache: false,
+          ansyc: true,
+          success: function (res) {
+              const data = res;
+              if (data.status == 0) {
+                  getList1(data.objMap.objects);
+              } else {
+                  tipMsg(0,data.message,15000);
+              }
+          },
+          error: function(err){
+              tipMsg(0,'系统错误');
+          }
+      });
+  }
+//  列表回显
+  function getList1(list) {
+//      var list = [{id: 11,name:'test4'},{id: 22,name:'test5'},{id: 33,name:'test6'},{id: 44,name:'test7'}];
+      var str1 = '';
+      var str2 = '';
+      $.each(list,function (idx,item) {
+        var itemStr = '';
+        itemStr += '<li data-id="'+ item.id +'">';
+        itemStr += '<div class="sexangle sexangle1">';
+        itemStr += '<div class="sexangleLeftLine"></div><div class="sexangleRightLine"></div>';
+        itemStr += '<div class="sexangleTitle"><a target="_blank" href="' + item.shortcutUrl + '">'+ item.shortcutName +'</a></div>';
+        itemStr += '<div class="handle">';
+        itemStr += '<div class="btn clearfix edit"><a href="javascript:void(0);" onclick="editAppliaction('+ item.id +')"><img src="img/bianji.png" alt=""></a></div>';
+        itemStr += '<div class="btn clearfix delete"><a href="javascript:void(0);" "><img src="img/shanc.png" alt=""></a></div>';
+        itemStr += '</div>';
+        itemStr += '<div class="sexangle sexangle2">';
+        itemStr += '<div class="sexangle sexangle3">';
+        itemStr += '<div class="circle">';
+        itemStr += '<div></div>';
+        itemStr += '</div>';
+        itemStr += '</div>';
+        itemStr += '</div>';
+        itemStr += '</div>';
+        itemStr += '</li>';
+        if (idx<5) {
+          str1 += itemStr;
+        } else {
+          str2 += itemStr;
+        }
+      })
+      var itemAdd = '';
+      itemAdd += '<li class="addSpecial">';
+      itemAdd += '<div class="sexangle sexangle1">';
+      itemAdd += '<div class="sexangleLeftLine"></div><div class="sexangleRightLine"></div>';
+      itemAdd += '<div class="addSpecialCircle">';
+      itemAdd += '<div><img src="img/add.png" alt=""></div>';
+      itemAdd += '</div>';
+      itemAdd += '<div class="sexangleTitle">新增专题</div>';
+      itemAdd += '<div class="sexangle sexangle2">';
+      itemAdd += '<div class="sexangle sexangle3">';
+      itemAdd += '</div>';
+      itemAdd += '</div>';
+      itemAdd += '</div>';
+      itemAdd += '</li>';
+      if (list.length >= 5) {
+        str2 += itemAdd;
+      } else {
+        str1 += itemAdd;
+      }
+      $(".special1").html(str1);
+      $(".special2").html(str2);
+      // 添加
+      $(".addSpecialCircle").unbind().click(function () {
+          $(".addPop").show().attr("data-id","");
+          $(".addContentTitle").text("新增应用");
+          $("#systemName").val("").removeAttr("readonly");
+          $("#RedirectURI").val("");
+          $("#ClientID").val("");
+          $("#ClientSecret").val("");
+          $("#homePageURL").val("");
+      });
+      //  删除按钮
+      $(".delete").unbind().click(function () {
+          $(".reminderPop").show().attr("data-id",$(this).parents("li").attr("data-id")); // 将id保存到弹框上面
+      });
+      //    效果部分
+      $(".special .sexangle3").mouseenter(function () {
+          $(".sexangle").removeClass("sexangleOn");
+          $(this).parents(".sexangle1").addClass("sexangleOn");
+      }).mouseleave(function () {
+          $(this).parents(".sexangle1").find(".handle").hide()
+          $(this).parents(".sexangle1").find(".sexangleTitle").show()
+          $(this).parents(".sexangle1").removeClass("sexangleOn");
+      });
+      $(".circle").mouseenter(function () {
+          $(this).parents(".sexangle1").find(".sexangleTitle").hide()
+          $(this).parents(".sexangle1").find(".handle").css({display: 'flex'})
+      });
+      $(".handle").mouseenter(function () {
+          $(this).parents(".sexangle1").find(".handle").css({display: 'flex'})
+          $(this).parents(".sexangle1").find(".sexangleTitle").hide();
+          $(this).parents(".sexangle1").addClass("sexangleOn");
+      });
+      $(".sexangleTitle").mouseenter(function () {
+          $(this).parents(".sexangle1").addClass("sexangleOn");
+      })
+  }
+  //修改 回显
+function editAppliaction(id) {
+      $.ajax({
+          url: "applications/" + id, /*v1.0*/
+          type:"get",
+          cache: false,
+          ansyc: true,
+          success: function (res) {
+              const data = res;
+              if (data.status == 0) {
+                  var appliaction = data.objMap.objects;
+                  $("#appliactionId").val(appliaction.id);
+                  $("#systemName").val(appliaction.shortcutName).attr("readonly",'readonly');
+                  $("#RedirectURI").val(appliaction.oauthRedirectUri);
+                  $("#ClientID").val(appliaction.oauthClientId);
+                  $("#ClientSecret").val(appliaction.oauthClientSecret);
+                  $("#homePageURL").val(appliaction.shortcutUrl);
+                  $(".addPop").show().attr("data-id",id); // 将id保存到弹框上面
+                  $(".addContentTitle").text("修改应用");
+              } else {
+                  tipMsg(0,data.message,15000);
+              }
+          },
+          error: function(err){
+              tipMsg(0,'系统错误');
+          }
+      });
+  }
+  //删除 确认按钮
+function deleteAppliaction(id) {
+    $.ajax({
+        url: "applications/" + id, /*v1.0*/
+        type:"delete",
+        cache: false,
+        ansyc: true,
+        success: function (res) {
+            const data = res;
+            if (data.status == 0) {
+                tipMsg(1,data.message);
+                $(".reminderPop").hide();
+                getList();
+            } else {
+                tipMsg(0,data.message,15000);
+            }
+        },
+        error: function(err){
+            tipMsg(0,'系统错误');
+        }
+    });
+}
+</script>
+</html>

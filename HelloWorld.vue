@@ -1,0 +1,450 @@
+<template>
+  <div>
+    <el-row>
+      <el-col :span="8">
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <div style="text-align: left;margin-bottom: 12px;margin-left: 4px">
+              历史记录
+            </div>
+            <el-input placeholder="请输入查询内容" v-model="searchList"></el-input>
+          </div>
+          <div v-for="item in dataList" :key="item.index" class="text item"
+               style="display: flex;justify-content: space-between;">
+            <li>{{ item.searchHistory }}</li>
+            <span
+              style="display: inline-block;width: 20px;height:20px;height: 20px;text-align: center;
+              padding: 6px;line-height: 20px;;cursor:pointer;color:#cfcfcf;font-size: 16px;">x</span>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="16">
+        <template>
+          <el-col :span="24">
+            <el-collapse v-model="activeNames" @change="handleChange">
+              <el-collapse-item title="展开查询" name="1">
+                <el-input
+                  type="textarea"
+                  :rows="18"
+                  placeholder="请输入内容"
+                  v-model="textarea">
+                </el-input>
+                <el-row :gutter="24" style="margin-top: 16px;text-align: right;margin-right: 0px;" justify="end">
+                  <el-button type="primary" @click="search">查询</el-button>
+                  <el-button type="success">保存</el-button>
+                </el-row>
+
+              </el-collapse-item>
+            </el-collapse>
+          </el-col>
+          <el-col :span="24">
+            <el-collapse v-model="activeNames" @change="handleChange">
+              <el-collapse-item title="查询结果" name="2">
+                <el-table
+                  v-loading="loading"
+                  highlight-current-row
+                  @current-change="handleCurrentChange"
+                  :data="tableData"
+                  style="width: 100%">
+                  <el-table-column
+                    prop="date"
+                    label="区域"
+                    align="center"
+
+                  >
+                  </el-table-column>
+                  <el-table-column
+                    prop="name"
+                    label="状态"
+                    align="center"
+                    width="600">
+                    <template slot-scope="scope">
+                      <div v-if="scope.row.name==1"><!--初始状态都是灰色-->
+                        <span style="">指令接受</span>
+                        <span class="liner">................</span>
+                        <span>进行中</span>
+                        <span class="liner">................</span>
+                        <span>超时</span>
+                      </div>
+                      <div v-if="scope.row.name==2"><!--接受指令的状态-->
+                        <span style="color:#26ad4e;font-weight:bold">指令接受</span>
+                        <span class="liner">................</span>
+                        <span>进行中</span>
+                        <span class="liner">................</span>
+                        <span>完成</span>
+                      </div>
+                      <div v-if="scope.row.name==3"><!--进行中的状态-->
+                        <span style="color:#26ad4e;font-weight:bold">指令接受</span>
+                        <span class="liner">................</span>
+                        <span style="color:#26ad4e;font-weight:bold">进行中</span>
+                        <span class="liner">................</span>
+                        <span >完成</span>
+                      </div>
+                      <div v-if="scope.row.name==4"><!--进行中的状态-->
+                        <span style="color:#26ad4e;font-weight:bold">指令接受</span>
+                        <span class="liner">................</span>
+                        <span style="color:#26ad4e;font-weight:bold">进行中</span>
+                        <span class="liner">................</span>
+                        <span style="color:#ad3b52;font-weight:bold">超时</span>
+                      </div>
+                      <div v-if="scope.row.name==5"><!--进行中的状态-->
+                        <span style="color:#26ad4e;font-weight:bold">指令接受</span>
+                        <span class="liner">................</span>
+                        <span style="color:#26ad4e;font-weight:bold">进行中</span>
+                        <span class="liner">................</span>
+                        <span style="color:#26ad4e;font-weight:bold">完成</span>
+                      </div>
+
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    prop="address"
+                    align="center"
+                    label="结果">
+                  </el-table-column>
+                </el-table>
+              </el-collapse-item>
+            </el-collapse>
+
+          </el-col>
+          <el-col :span="24">
+            <el-collapse v-model="activeNames" @change="handleChange">
+              <el-collapse-item title="结果统计" name="3">
+                <el-table
+                  :data="watchArr"
+                  style="width: 100%">
+                  <el-table-column
+                    prop="date"
+                    label="查询条件"
+                    width="180">
+                  </el-table-column>
+                  <el-table-column
+                    prop="name"
+                    label="状态"
+                    width="180">
+                  </el-table-column>
+                  <el-table-column
+                    prop="address"
+                    label="涵盖省份">
+                  </el-table-column>
+                  <el-table-column
+                    prop="address"
+                    label="结果统计">
+                  </el-table-column>
+                </el-table>
+              </el-collapse-item>
+            </el-collapse>
+          </el-col>
+        </template>
+      </el-col>
+    </el-row>
+
+  </div>
+</template>
+
+<script>
+  export default {
+    name: 'HelloWorld',
+    data() {
+      return {
+        loading:false,
+        currentRow: '',
+        timer: null,
+        searchList: '',
+        textarea: '',
+        activeNames: ['1'],
+        dataList: [
+          {
+            searchHistory: '一体化管理的情况',
+          },
+          {
+            searchHistory: '一体化管理的情况',
+          },
+          {
+            searchHistory: '一体化管理的情况',
+          },
+          {
+            searchHistory: '一体化管理的情况',
+          },
+          {
+            searchHistory: '一体化管理的情况',
+          },
+          {
+            searchHistory: '一体化管理的情况',
+          }
+        ],
+        tableData: [
+          ],
+        watchArr: [
+
+        ],
+      }
+    },
+
+    methods: {
+      handleChange(val) {
+        /*console.log(val);*/
+      },
+      updateData: function () {
+        var _this=this;
+        setTimeout(function () {
+          /*有数据状态*/
+          _this.tableData=[
+            {
+              date: '天津市',
+              name: 1,
+              address: '50%'
+            },
+            {
+              date: '河北省',
+              name: 1,
+              address: '23%'
+            }, {
+              date: '北京市',
+              name: 1,
+              address: '23%'
+            }, {
+              date: '北京市',
+              name: 1,
+              address: '23%'
+            }, {
+              date: '北京市',
+              name: 1,
+              address: '23%'
+            }
+          ]
+          _this.loading=false;
+
+          console.log(1)
+          console.log(_this.loading)
+        },1000)
+
+       setTimeout(function () {
+         /*接受指令状态*/
+         _this.tableData=[
+           {
+             date: '天津市',
+             name: 2,
+             address: '50%'
+           },
+           {
+             date: '河北省',
+             name: 2,
+             address: '23%'
+           }, {
+             date: '北京市',
+             name: 2,
+             address: '23%'
+           }, {
+             date: '北京市',
+             name: 2,
+             address: '23%'
+           }, {
+             date: '北京市',
+             name: 2,
+             address: '23%'
+           }
+         ]
+         console.log(2)
+
+       },2000)
+
+        setTimeout(function () {
+          /*进行中*/
+          _this.tableData=[
+            {
+              date: '天津市',
+              name: 3,
+              address: '50%'
+            },
+            {
+              date: '河北省',
+              name: 3,
+              address: '23%'
+            }, {
+              date: '北京市',
+              name: 3,
+              address: '23%'
+            }, {
+              date: '北京市',
+              name: 3,
+              address: '23%'
+            }, {
+              date: '北京市',
+              name: 3,
+              address: '23%'
+            }
+          ]
+          console.log(3)
+        },3000)
+
+        setTimeout(function () {
+          /*完成或者超时*/
+          _this.tableData=[
+            {
+              date: '天津市',
+              name: 5,
+              address: '50%'
+            },
+            {
+              date: '河北省',
+              name: 4,
+              address: '23%'
+            }, {
+              date: '北京市',
+              name: 5,
+              address: '23%'
+            }, {
+              date: '北京市',
+              name: 4,
+              address: '23%'
+            }, {
+              date: '北京市',
+              name: 5,
+              address: '23%'
+            }
+          ]
+          console.log(4)
+        },5000)
+
+      },
+      handleCurrentChange: function (val) {
+         this.currentRow = val;
+         console.log(val)
+      },
+      search:function () {
+        if(this.textarea==""){
+          this.$message({
+            message: '请输入具体查询条件',
+            type: 'warning'
+          });
+          return;
+        }
+        this.textarea="";
+        this.tableData=[];
+        this.activeNames=['2'];
+        this.loading=true;
+        var that = this;
+        that.updateData()
+
+
+      }
+
+
+    },
+    created: function () {
+
+
+
+    },
+    destroyed: function () {
+      clearTimeout(this.timer)
+    },
+    watch: {
+      textarea: function (val) {
+       /* console.log(val)*/
+
+      },
+      tableData: {
+        handler: function (val, oldVal) {
+          //console.log(val)
+          for (var i = 0; i < val.length; i++) {
+            if(val[i].name == 2){
+
+            }
+            if (val[i].name == 4) {
+              this.watchArr = val;
+              this.activeNames=['3']
+
+            }
+
+          }
+        },
+        deep: true
+      }
+
+    },
+    tableData(newVal) {
+      console.log('监听：' + newVal);
+    },
+    computed: {
+      'tableDataa;': function () {
+        return this.tableData + '-' + this.tableData
+        console.log(this.tableData)
+      }
+    }
+
+  }
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+  el-table__header-wrapper table thead.has-gutter {
+    background-color: pink !important;
+  }
+
+  .bg-purple-dark {
+    background: #99a9bf;
+  }
+
+  .bg-purple {
+    background: #d3dce6;
+  }
+
+  .grid-content {
+    border-radius: 4px;
+    min-height: 36px;
+  }
+
+  .text {
+    font-size: 14px;
+  }
+
+  .item {
+    margin-bottom: 18px;
+  }
+
+  .liner {
+    font-size: 16px;
+    color: #a1979b;
+    vertical-align: super;
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+
+  .clearfix:before,
+  .clearfix:after {
+    display: table;
+    content: "";
+  }
+
+  .clearfix:after {
+    clear: both
+  }
+
+  .box-card {
+    width: 480px;
+  }
+
+  .el-table thead tr {
+    background-color: aqua !important;
+  }
+
+  h1, h2 {
+    font-weight: normal;
+  }
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  li {
+    display: inline-block;
+    margin: 6px 10px;
+  }
+
+  a {
+    color: #42b983;
+  }
+</style>
